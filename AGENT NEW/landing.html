@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAlpha - Nền Tảng AI Thẩm Định Mua Sắm B2B</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        pinky: {
+                            50: '#FFF5F8',
+                            100: '#FFEBF1',
+                            200: '#FFD6E3',
+                            300: '#FFB8CF',
+                            400: '#FF85AC',
+                            500: '#F43F7A',
+                            600: '#E11D5A',
+                            700: '#BE1243',
+                            800: '#8A0E30',
+                            900: '#520B1D',
+                            950: '#26040C'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        /* Bầu trời sao vũ trụ màu hồng (Deep Rosé Cosmic Starry Sky) */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: 
+                radial-gradient(ellipse at 22% 16%, rgba(225, 29, 90, 0.28) 0%, rgba(138, 20, 60, 0.15) 35%, transparent 70%),
+                radial-gradient(ellipse at 82% 42%, rgba(244, 63, 122, 0.22) 0%, rgba(82, 11, 29, 0.18) 45%, transparent 75%),
+                radial-gradient(circle at 48% 82%, rgba(255, 133, 172, 0.18) 0%, rgba(110, 15, 50, 0.15) 40%, transparent 80%),
+                linear-gradient(180deg, #0F040D 0%, #160613 40%, #1A0716 70%, #0B0209 100%);
+            background-color: #0E030B;
+            background-attachment: fixed;
+            color: #FFEBF2;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Hiệu ứng luồng sáng chuột vũ trụ hồng (Cosmic Stardust Glow Trail) */
+        #cursor-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 550px;
+            height: 550px;
+            margin-top: -275px;
+            margin-left: -275px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 105, 165, 0.24) 0%, rgba(225, 29, 90, 0.12) 40%, rgba(138, 20, 60, 0) 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.08s ease-out;
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        #cursor-trail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 140px;
+            height: 140px;
+            margin-top: -70px;
+            margin-left: -70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 140, 190, 0.42) 0%, rgba(244, 63, 122, 0.2) 50%, transparent 80%);
+            pointer-events: none;
+            z-index: 9998;
+            filter: blur(10px);
+            transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+            mix-blend-mode: screen;
+            will-change: transform;
+        }
+
+        /* Nút nổi trong suốt pha lê hồng (Luminous Pink Crystal Glass Buttons) */
+        .glass-btn-primary {
+            background: linear-gradient(135deg, rgba(244, 63, 122, 0.9) 0%, rgba(190, 18, 67, 0.85) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 
+                0 10px 28px -4px rgba(244, 63, 122, 0.55),
+                0 0 25px rgba(244, 63, 122, 0.35),
+                inset 0 1px 3px rgba(255, 255, 255, 0.6);
+            color: #FFFFFF !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            background: linear-gradient(135deg, rgba(255, 85, 140, 0.96) 0%, rgba(225, 29, 90, 0.92) 100%);
+            box-shadow: 
+                0 16px 38px -6px rgba(244, 63, 122, 0.7),
+                0 0 35px rgba(255, 133, 172, 0.5),
+                inset 0 1px 4px rgba(255, 255, 255, 0.85);
+            border-color: rgba(255, 255, 255, 0.85);
+        }
+        .glass-btn-primary:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .glass-btn-subtle {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 184, 207, 0.28);
+            box-shadow: 
+                0 6px 20px -3px rgba(0, 0, 0, 0.35),
+                inset 0 1px 2px rgba(255, 255, 255, 0.2);
+            color: #FFEBF2 !important;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-btn-subtle:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(255, 184, 207, 0.65);
+            box-shadow: 
+                0 10px 25px -4px rgba(225, 29, 90, 0.35),
+                0 0 18px rgba(255, 133, 172, 0.25);
+        }
+        .glass-btn-subtle:active {
+            transform: translateY(1px);
+        }
+
+        /* Thẻ nổi trong suốt vũ trụ (Cosmic Floating Glass Cards) */
+        .glass-card {
+            background: rgba(28, 9, 23, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 184, 207, 0.22);
+            box-shadow: 
+                0 18px 45px -10px rgba(0, 0, 0, 0.65),
+                0 0 25px rgba(225, 29, 90, 0.12),
+                inset 0 1px 2px rgba(255, 255, 255, 0.16);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            background: rgba(42, 13, 34, 0.78);
+            border-color: rgba(255, 133, 172, 0.55);
+            box-shadow: 
+                0 25px 55px -12px rgba(0, 0, 0, 0.75),
+                0 0 35px rgba(244, 63, 122, 0.25),
+                inset 0 1px 3px rgba(255, 255, 255, 0.28);
+        }
+
+        .gradient-pink-text {
+            background: linear-gradient(135deg, #FFFFFF 0%, #FF85AC 45%, #F43F7A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Floating Animation */
+        @keyframes gentle-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float {
+            animation: gentle-float 4.5s ease-in-out infinite;
+        }
+
+        /* Tinh chỉnh thanh cuộn vũ trụ hồng */
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: rgba(14, 3, 11, 0.6); }
+        ::-webkit-scrollbar-thumb { background: #E11D5A; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF85AC; }
+
+        /* HIỆU ỨNG SÓNG ÁNH SÁNG & BỤI SAO KHI CLICK (CLICK SHOCKWAVE & STARDUST) */
+        .click-shockwave {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            margin-top: -12px;
+            margin-left: -12px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 133, 172, 0.95);
+            background: radial-gradient(circle, rgba(244, 63, 122, 0.45) 0%, rgba(255, 184, 207, 0.15) 55%, transparent 75%);
+            pointer-events: none;
+            z-index: 99999;
+            box-shadow: 0 0 25px rgba(244, 63, 122, 0.7);
+            animation: shockwave-expand 0.55s cubic-bezier(0.12, 0.8, 0.25, 1) forwards;
+        }
+
+        @keyframes shockwave-expand {
+            0% {
+                transform: scale(0.4);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(6.5);
+                opacity: 0;
+                border-width: 0.5px;
+            }
+        }
+
+        .click-particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            animation: particle-fly 0.55s cubic-bezier(0.12, 0.85, 0.2, 1) forwards;
+        }
+
+        @keyframes particle-fly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="selection:bg-pink-500 selection:text-white">
+
+    <!-- CANVAS BẦU TRỜI SAO VŨ TRỤ HỒNG (TWINKLING STARS & SHOOTING STARS) -->
+    <canvas id="starfield-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Luồng sáng di chuyển theo chuột (Dynamic Mouse Glow Trail) -->
+    <div id="cursor-glow"></div>
+    <div id="cursor-trail"></div>
+
+    <!-- Background Floating Nebulae Orbs (Tinh vân ánh sáng hồng huyền bí) -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div class="absolute -top-32 left-1/4 w-[600px] h-[600px] bg-pink-600/15 rounded-full blur-[140px]"></div>
+        <div class="absolute top-1/2 -right-24 w-[500px] h-[500px] bg-rose-500/15 rounded-full blur-[150px]"></div>
+        <div class="absolute -bottom-24 left-10 w-[550px] h-[550px] bg-fuchsia-600/12 rounded-full blur-[140px]"></div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- NAVIGATION BAR TRONG SUỐT -->
+    <!-- ============================================================ -->
+    <header class="fixed top-0 left-0 right-0 z-50 py-4 px-6 sm:px-10 transition-all">
+        <div class="max-w-6xl mx-auto rounded-3xl p-3 px-6 glass-card flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="landing.html" onclick="playUiClick('nav')" class="flex items-center space-x-3 group">
+                <div class="w-10 h-10 rounded-2xl glass-btn-primary flex items-center justify-center text-white text-lg shadow-sm">
+                    <i class="fa-solid fa-shapes text-pink-200"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-base font-black tracking-tight text-white">D<span class="text-pink-400">Alpha</span></span>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-pink-500/20 text-pink-300 border border-pink-400/40">AI B2B</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Menu Tối Giản -->
+            <nav class="hidden md:flex items-center space-x-7 text-xs font-bold text-pink-200/85">
+                <a href="#features" onclick="playUiClick('tab')" class="hover:text-pink-400 transition">Giải Pháp</a>
+                <a href="#how" onclick="playUiClick('tab')" class="hover:text-pink-400 transition">Quy Trình 4 Bước</a>
+                <a href="#calculator" onclick="playUiClick('tab')" class="hover:text-pink-400 transition">Ước Tính ROI</a>
+                <a href="#cases" onclick="playUiClick('tab')" class="hover:text-pink-400 transition">Khách Hàng</a>
+            </nav>
+
+            <!-- Nút Thao Tác Nổi Trong Suốt -->
+            <div class="flex items-center space-x-3">
+                <!-- Nút Bật/Tắt Âm Thanh Tương Tác -->
+                <button id="soundToggleBtn" onclick="toggleSoundMode()" title="Bật/Tắt âm thanh click" class="w-9 h-9 rounded-2xl glass-btn-subtle flex items-center justify-center text-pink-300 text-xs">
+                    <i id="soundIcon" class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <button onclick="openDalphaLoginPortal()" class="hidden md:inline-flex px-4 py-2 rounded-2xl glass-btn-subtle text-xs font-bold text-pink-100 items-center space-x-1.5 cursor-pointer">
+                    <i class="fa-brands fa-google text-pink-400"></i>
+                    <span>Cổng Đăng Nhập</span>
+                </button>
+
+                <button onclick="openDalphaLoginPortal('customer')" class="hidden sm:inline-flex px-4 py-2 rounded-2xl glass-btn-subtle text-xs font-bold text-pink-100 items-center space-x-1.5 cursor-pointer">
+                    <i class="fa-solid fa-user-tie text-pink-400"></i>
+                    <span>Cổng Khách Hàng</span>
+                </button>
+
+                <button onclick="openDalphaLoginPortal('minhan')" class="px-5 py-2.5 rounded-2xl glass-btn-primary text-xs font-black text-white flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-pink-200"></i>
+                    <span>Mở DAlpha CRM</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- HERO SECTION TỐI GIẢN & HIỆN ĐẠI -->
+    <!-- ============================================================ -->
+    <section class="relative z-10 pt-40 pb-20 px-6 sm:px-10 text-center">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <!-- Badge Nổi Trong Suốt Bầu Trời Sao -->
+            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full glass-card text-[11px] font-extrabold text-pink-300 border-pink-400/30 shadow-sm animate-float">
+                <span class="w-2 h-2 rounded-full bg-pink-400 animate-ping"></span>
+                <i class="fa-solid fa-sparkles text-pink-400 text-xs"></i>
+                <span>AI Procurement Engine Cho Doanh Nghiệp CNTT</span>
+            </div>
+
+            <!-- Tiêu Đề Đột Phá, Cô Đọng Rực Sáng Giữa Trời Sao -->
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.15]">
+                Tối Ưu <span class="gradient-pink-text">10% - 25% Ngân Sách</span><br>
+                Mua Sắm Thiết Bị Bằng AI Đa Chiều
+            </h1>
+
+            <!-- Mô Tả Tinh Gọn (Ít Chữ) -->
+            <p class="text-sm sm:text-base text-pink-200/80 font-medium max-w-xl mx-auto leading-relaxed">
+                Tự động bóc tách hồ sơ Excel, kết hợp <b class="text-white">bối cảnh doanh nghiệp</b> với số liệu thực tế để đối soát tồn kho ATP và xuất báo cáo A4 chuẩn trong 30 giây.
+            </p>
+
+            <!-- Cặp Nút Nổi Trong Suốt (Floating Glass Buttons) -->
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-3">
+                <button onclick="openDalphaLoginPortal('customer')" class="px-8 py-3.5 rounded-2xl glass-btn-primary font-black text-sm text-white flex items-center space-x-2.5 cursor-pointer">
+                    <i class="fa-solid fa-cloud-arrow-up text-pink-200"></i>
+                    <span>Tải Lên Hồ Sơ &amp; Phân Tích Ngay</span>
+                    <i class="fa-solid fa-arrow-right text-xs opacity-70"></i>
+                </button>
+                <a href="#how" onclick="playUiClick('subtle')" class="px-6 py-3.5 rounded-2xl glass-btn-subtle font-bold text-sm text-pink-100 flex items-center space-x-2">
+                    <i class="fa-solid fa-play text-pink-400 text-xs"></i>
+                    <span>Xem Cách Hoạt Động</span>
+                </a>
+            </div>
+
+            <!-- 3 Con Số Trọng Tâm (Minimal Stats) -->
+            <div class="grid grid-cols-3 gap-4 pt-10 max-w-2xl mx-auto">
+                <div class="p-4 rounded-3xl glass-card">
+                    <div class="text-2xl sm:text-3xl font-black gradient-pink-text">-15.2%</div>
+                    <div class="text-[11px] font-bold text-pink-300 mt-0.5">Tiết Kiệm Ngân Sách</div>
+                </div>
+                <div class="p-4 rounded-3xl glass-card">
+                    <div class="text-2xl sm:text-3xl font-black gradient-pink-text">30 Giây</div>
+                    <div class="text-[11px] font-bold text-pink-300 mt-0.5">Báo Giá Siêu Tốc</div>
+                </div>
+                <div class="p-4 rounded-3xl glass-card">
+                    <div class="text-2xl sm:text-3xl font-black gradient-pink-text">02 Ngày</div>
+                    <div class="text-[11px] font-bold text-pink-300 mt-0.5">Giao Kho ATP</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVE FLOATING GLASS PREVIEW CARD -->
+        <div class="max-w-4xl mx-auto mt-14 rounded-3xl p-3 glass-card shadow-2xl relative">
+            <div class="rounded-2xl p-5 bg-white/[0.04] backdrop-blur-xl border border-white/10 space-y-4 text-left">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-pink-500/20 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-pink-400 shadow-neon-pink"></span>
+                        <span class="text-xs font-black text-white">Thẩm Định Mẫu: Công Ty CP Đầu Tư Nam Việt</span>
+                    </div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-pink-500/20 text-pink-300 border border-pink-500/30">
+                        Tiết Kiệm: -79.925.000 đ (+15.2% ROI)
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-pink-500/20 space-y-1">
+                        <span class="text-[10px] font-extrabold uppercase text-pink-400">1. Đơn Vị Thụ Hưởng</span>
+                        <div class="text-xs font-black text-white">Phòng Kỹ Thuật IT</div>
+                        <p class="text-[11px] text-pink-200/70">Chiếm 45.0% ngân sách, mở rộng trạm làm việc &amp; máy chủ.</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-pink-500/20 space-y-1">
+                        <span class="text-[10px] font-extrabold uppercase text-pink-400">2. Công Nghệ Cốt Lõi</span>
+                        <div class="text-xs font-black text-white">Laptop &amp; Cisco Switch</div>
+                        <p class="text-[11px] text-pink-200/70">Đồng bộ Master Catalog, giảm 35% chi phí vận hành.</p>
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-white/[0.03] border border-pink-500/20 space-y-1">
+                        <span class="text-[10px] font-extrabold uppercase text-pink-400">3. Tiến Độ Kho ATP</span>
+                        <div class="text-xs font-black text-emerald-400">Sẵn Sàng 18/20 Thiết Bị</div>
+                        <p class="text-[11px] text-pink-200/70">Cam kết giao hàng &amp; bàn giao trong 02 ngày làm việc.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 3 TÍNH NĂNG CỐT LÕI (Ít chữ, thẻ nổi trong suốt) -->
+    <!-- ============================================================ -->
+    <section id="features" class="relative z-10 py-16 px-6 sm:px-10">
+        <div class="max-w-5xl mx-auto space-y-10">
+            <div class="text-center space-y-2">
+                <span class="text-[11px] font-black uppercase tracking-widest text-pink-400">Năng Lực Đột Phá</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white">Giải Pháp Thông Minh Cho Thu Mua B2B</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="p-6 rounded-3xl glass-card space-y-3 group cursor-pointer" onclick="playUiClick('card')">
+                    <div class="w-12 h-12 rounded-2xl glass-btn-primary flex items-center justify-center text-white text-lg shadow-sm">
+                        <i class="fa-solid fa-file-excel"></i>
+                    </div>
+                    <h3 class="text-base font-black text-white">Bóc Tách Excel &amp; Sheet</h3>
+                    <p class="text-xs text-pink-200/75 leading-relaxed">
+                        Nhận diện tức thì mọi định dạng .xlsx, .csv và Google Sheets. Tự động kiểm tra và sửa lỗi cột thiếu số liệu.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="p-6 rounded-3xl glass-card space-y-3 group cursor-pointer" onclick="playUiClick('card')">
+                    <div class="w-12 h-12 rounded-2xl glass-btn-primary flex items-center justify-center text-white text-lg shadow-sm">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <h3 class="text-base font-black text-white">Kết Hợp Bối Cảnh &amp; Số Liệu</h3>
+                    <p class="text-xs text-pink-200/75 leading-relaxed">
+                        AI Gemini giải đáp trực tiếp các câu hỏi chiến lược của doanh nghiệp bằng số liệu đối soát định lượng cụ thể.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="p-6 rounded-3xl glass-card space-y-3 group cursor-pointer" onclick="playUiClick('card')">
+                    <div class="w-12 h-12 rounded-2xl glass-btn-primary flex items-center justify-center text-white text-lg shadow-sm">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h3 class="text-base font-black text-white">Hệ Thống Biểu Đồ Đa Dạng &amp; In A4</h3>
+                    <p class="text-xs text-pink-200/75 leading-relaxed">
+                        Tự động sinh các biểu đồ Cột Kép, Bánh Khuyên, Mạng Nhện 5D, Đường Quý, Cột Ngang và Vùng Cực thích ứng theo dữ liệu.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- QUY TRÌNH 4 BƯỚC TINH GỌN -->
+    <!-- ============================================================ -->
+    <section id="how" class="relative z-10 py-16 px-6 sm:px-10">
+        <div class="max-w-5xl mx-auto space-y-10">
+            <div class="text-center space-y-2">
+                <span class="text-[11px] font-black uppercase tracking-widest text-pink-400">Đơn Giản &amp; Tự Động</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-white">Quy Trình 4 Bước Hoàn Tất</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-5 rounded-3xl glass-card space-y-2">
+                    <span class="w-7 h-7 rounded-full glass-btn-primary font-black text-xs text-white flex items-center justify-center">1</span>
+                    <h4 class="font-black text-xs text-white">Nạp Bối Cảnh &amp; File</h4>
+                    <p class="text-[11px] text-pink-200/70">Kéo thả tệp Excel hoặc dán link Google Sheets.</p>
+                </div>
+                <div class="p-5 rounded-3xl glass-card space-y-2">
+                    <span class="w-7 h-7 rounded-full glass-btn-primary font-black text-xs text-white flex items-center justify-center">2</span>
+                    <h4 class="font-black text-xs text-white">AI Đối Soát Master</h4>
+                    <p class="text-[11px] text-pink-200/70">Áp dụng chiết khấu gom đơn Bundling CK 5%.</p>
+                </div>
+                <div class="p-5 rounded-3xl glass-card space-y-2">
+                    <span class="w-7 h-7 rounded-full glass-btn-primary font-black text-xs text-white flex items-center justify-center">3</span>
+                    <h4 class="font-black text-xs text-white">Xem Biểu Đồ Đa Chiều</h4>
+                    <p class="text-[11px] text-pink-200/70">Trực quan hóa lộ trình ngân sách và hạ tầng 5D.</p>
+                </div>
+                <div class="p-5 rounded-3xl glass-card space-y-2">
+                    <span class="w-7 h-7 rounded-full glass-btn-primary font-black text-xs text-white flex items-center justify-center">4</span>
+                    <h4 class="font-black text-xs text-white">In A4 &amp; Giao Kho</h4>
+                    <p class="text-[11px] text-pink-200/70">Nhận hàng kho ATP cam kết trong 48 giờ làm việc.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- ƯỚC TÍNH ROI TRONG SUỐT (INTERACTIVE CALCULATOR) -->
+    <!-- ============================================================ -->
+    <section id="calculator" class="relative z-10 py-16 px-6 sm:px-10">
+        <div class="max-w-4xl mx-auto rounded-3xl p-8 glass-card space-y-6">
+            <div class="text-center space-y-1">
+                <span class="text-[11px] font-black uppercase tracking-widest text-pink-400">Tiết Kiệm Dự Kiến</span>
+                <h3 class="text-2xl font-black text-white">Ước Tính Ngân Sách Tiết Kiệm</h3>
+            </div>
+
+            <div class="space-y-4 max-w-xl mx-auto">
+                <div class="flex justify-between items-center text-xs font-bold text-pink-200">
+                    <span>Ngân sách dự kiến:</span>
+                    <span id="calcBudgetLabel" class="text-base font-black text-pink-400">500.000.000 đ</span>
+                </div>
+                <input type="range" id="calcSlider" min="100000000" max="2000000000" step="50000000" value="500000000" oninput="updateRoiCalc(this.value)" class="w-full h-2 bg-pink-900/60 rounded-lg appearance-none cursor-pointer accent-pink-500">
+            </div>
+
+            <!-- Kết quả nổi trong suốt -->
+            <div class="p-5 rounded-2xl glass-card max-w-md mx-auto text-center space-y-2 border-pink-500/30">
+                <span class="text-xs font-bold text-pink-200">Số tiền tiết kiệm trực tiếp (-15.2%):</span>
+                <div id="calcSavingResult" class="text-3xl font-black gradient-pink-text">76.000.000 đ</div>
+                <p class="text-[11px] text-pink-200/70">Cam kết giao kho ATP khả dụng trong 02 ngày làm việc.</p>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="openDalphaLoginPortal('customer')" class="inline-flex px-8 py-3 rounded-2xl glass-btn-primary font-black text-xs text-white space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-sparkles text-pink-200"></i>
+                    <span>Tải File Thật Để Xem Báo Cáo Chi Tiết &rarr;</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- KHÁCH HÀNG TIÊU BIỂU (TỐI GIẢN) -->
+    <!-- ============================================================ -->
+    <section id="cases" class="relative z-10 py-16 px-6 sm:px-10">
+        <div class="max-w-5xl mx-auto space-y-8">
+            <div class="text-center space-y-1">
+                <span class="text-[11px] font-black uppercase tracking-widest text-pink-400">Đã Thẩm Định</span>
+                <h3 class="text-2xl font-black text-white">500+ Khách Hàng Tiêu Biểu</h3>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="p-5 rounded-3xl glass-card space-y-2" onclick="playUiClick('card')">
+                    <div class="flex justify-between items-center text-xs font-bold">
+                        <span class="text-white">Nam Việt Corp</span>
+                        <span class="text-emerald-400 font-black">-79.9 Tr (15.2%)</span>
+                    </div>
+                    <p class="text-[11px] text-pink-200/70">Trang bị 15 Laptop Dell &amp; Switch Cisco cho 5 phòng ban.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl glass-card space-y-2" onclick="playUiClick('card')">
+                    <div class="flex justify-between items-center text-xs font-bold">
+                        <span class="text-white">TechAsia Cloud</span>
+                        <span class="text-emerald-400 font-black">-104.7 Tr (13.7%)</span>
+                    </div>
+                    <p class="text-[11px] text-pink-200/70">Mở rộng Datacenter với Server Dell R740 chuẩn HA 99.99%.</p>
+                </div>
+
+                <div class="p-5 rounded-3xl glass-card space-y-2" onclick="playUiClick('card')">
+                    <div class="flex justify-between items-center text-xs font-bold">
+                        <span class="text-white">VietTrans Logistics</span>
+                        <span class="text-emerald-400 font-black">-57.3 Tr (12.2%)</span>
+                    </div>
+                    <p class="text-[11px] text-pink-200/70">Đồng bộ thiết bị điều vận 3 kho ngoại quan &amp; cảng biển.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- FOOTER TRONG SUỐT NHẸ NHÀNG -->
+    <!-- ============================================================ -->
+    <footer class="relative z-10 py-12 px-6 sm:px-10 border-t border-pink-500/20">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-bold text-pink-200/60">
+            <div class="flex items-center space-x-2">
+                <span class="font-black text-white">DAlpha</span>
+                <span>• Phòng Phân Tích Dữ Liệu B2B</span>
+            </div>
+            <div class="flex items-center space-x-5">
+                <button onclick="openDalphaLoginPortal()" class="hover:text-pink-400 transition cursor-pointer">Cổng Đăng Nhập</button>
+                <button onclick="openDalphaLoginPortal('minhan')" class="hover:text-pink-400 transition cursor-pointer">Bảng Điều Khiển CRM</button>
+                <button onclick="openDalphaLoginPortal('customer')" class="hover:text-pink-400 transition cursor-pointer">Cổng Khách Hàng</button>
+                <button onclick="openDalphaLoginPortal('customer')" class="hover:text-pink-400 transition cursor-pointer">Lưu Trữ Báo Cáo</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT: BẦU TRỜI SAO VŨ TRỤ HỒNG & HIỆU ỨNG LUỒNG SÁNG, ÂM THANH -->
+    <!-- ============================================================ -->
+    <script>
+        // Tọa độ chuột toàn cục dùng chung cho cả Starfield và Cursor Trail
+        let mouseX = typeof window !== 'undefined' ? window.innerWidth / 2 : 500;
+        let mouseY = typeof window !== 'undefined' ? window.innerHeight / 2 : 400;
+
+        // ----------------------------------------------------
+        // 0. BẦU TRỜI SAO VŨ TRỤ HỒNG (PINK COSMIC STARFIELD & SHOOTING STARS)
+        // ----------------------------------------------------
+        const canvas = document.getElementById('starfield-canvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            const STAR_COUNT = Math.min(280, Math.max(140, Math.floor((width * height) / 4200)));
+            const stars = [];
+            const starColors = [
+                '#FFFFFF',
+                '#FFEBF1',
+                '#FFB8CF',
+                '#FF85AC',
+                '#FFD6E3',
+                'rgba(244, 63, 122, 0.95)',
+                'rgba(255, 235, 245, 0.95)'
+            ];
+
+            function initStars() {
+                stars.length = 0;
+                for (let i = 0; i < STAR_COUNT; i++) {
+                    stars.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.5 + 0.35,
+                        baseAlpha: Math.random() * 0.7 + 0.3,
+                        twinkleSpeed: Math.random() * 0.03 + 0.008,
+                        phase: Math.random() * Math.PI * 2,
+                        color: starColors[Math.floor(Math.random() * starColors.length)],
+                        parallaxFactor: Math.random() * 0.035 + 0.008
+                    });
+                }
+            }
+            initStars();
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                initStars();
+            });
+
+            // Shooting stars (Sao băng vệt hồng lướt qua bầu trời)
+            const shootingStars = [];
+            function maybeSpawnShootingStar() {
+                if (shootingStars.length < 2 && Math.random() < 0.012) {
+                    shootingStars.push({
+                        x: Math.random() * width * 0.8 + width * 0.1,
+                        y: Math.random() * height * 0.35,
+                        length: Math.random() * 90 + 50,
+                        speed: Math.random() * 8 + 6,
+                        angle: Math.PI / 4 + (Math.random() - 0.5) * 0.25, // ~45 độ
+                        opacity: 1,
+                        life: 0,
+                        maxLife: Math.random() * 25 + 35
+                    });
+                }
+            }
+
+            let starTime = 0;
+            function renderStarfield() {
+                starTime += 1;
+                ctx.clearRect(0, 0, width, height);
+
+                // Thị sai nhẹ theo vị trí chuột
+                const offsetX = (mouseX - width / 2);
+                const offsetY = (mouseY - height / 2);
+
+                for (let i = 0; i < stars.length; i++) {
+                    const s = stars[i];
+                    s.phase += s.twinkleSpeed;
+                    const flicker = Math.sin(s.phase) * 0.4;
+                    const a = Math.max(0.1, Math.min(1, s.baseAlpha + flicker));
+
+                    const px = (s.x + offsetX * s.parallaxFactor + width) % width;
+                    const py = (s.y + offsetY * s.parallaxFactor + height) % height;
+
+                    ctx.save();
+                    ctx.globalAlpha = a;
+                    ctx.fillStyle = s.color;
+                    ctx.beginPath();
+                    ctx.arc(px, py, s.radius, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Vầng hào quang hồng mềm cho các sao lớn
+                    if (s.radius > 1.25) {
+                        ctx.globalAlpha = a * 0.32;
+                        ctx.fillStyle = '#FF85AC';
+                        ctx.beginPath();
+                        ctx.arc(px, py, s.radius * 2.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                }
+
+                // Render sao băng
+                maybeSpawnShootingStar();
+                for (let i = shootingStars.length - 1; i >= 0; i--) {
+                    const ss = shootingStars[i];
+                    ss.life++;
+                    const progress = ss.life / ss.maxLife;
+                    ss.x += Math.cos(ss.angle) * ss.speed;
+                    ss.y += Math.sin(ss.angle) * ss.speed;
+                    ss.opacity = Math.sin(progress * Math.PI);
+
+                    const tailX = ss.x - Math.cos(ss.angle) * ss.length;
+                    const tailY = ss.y - Math.sin(ss.angle) * ss.length;
+
+                    const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
+                    grad.addColorStop(0, `rgba(255, 255, 255, ${ss.opacity * 0.95})`);
+                    grad.addColorStop(0.3, `rgba(255, 133, 172, ${ss.opacity * 0.85})`);
+                    grad.addColorStop(1, `rgba(225, 29, 90, 0)`);
+
+                    ctx.save();
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(ss.x, ss.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.stroke();
+
+                    // Điểm sáng ở đầu sao băng
+                    ctx.fillStyle = `rgba(255, 235, 245, ${ss.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(ss.x, ss.y, 2.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+
+                    if (ss.life >= ss.maxLife) {
+                        shootingStars.splice(i, 1);
+                    }
+                }
+
+                requestAnimationFrame(renderStarfield);
+            }
+            renderStarfield();
+        }
+
+        // ----------------------------------------------------
+        // 1. HIỆU ỨNG DI CHUYỂN CHUỘT KIỂU LUỒNG SÁNG (LIGHT STREAM)
+        // ----------------------------------------------------
+        const glow = document.getElementById('cursor-glow');
+        const trail = document.getElementById('cursor-trail');
+        let currentX = mouseX;
+        let currentY = mouseY;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (glow) {
+                glow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+            }
+        });
+
+        // Smooth physics trail interpolation
+        function animateTrail() {
+            currentX += (mouseX - currentX) * 0.15;
+            currentY += (mouseY - currentY) * 0.15;
+            if (trail) {
+                trail.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+            requestAnimationFrame(animateTrail);
+        }
+        animateTrail();
+
+        // ----------------------------------------------------
+        // 2. HIỆU ỨNG ÂM THANH CLICK CHUỘT (FOOLPROOF WEB AUDIO API)
+        // ----------------------------------------------------
+        let isSoundEnabled = true;
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioCtxClass) {
+                    audioCtx = new AudioCtxClass();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Mở khóa AudioContext ngay từ lần tương tác đầu tiên
+        ['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach(evt => {
+            window.addEventListener(evt, () => {
+                getAudioContext();
+            }, { once: false, passive: true });
+        });
+
+        function playSoundNodes(ctx, kind) {
+            try {
+                const startTime = Math.max(ctx.currentTime, 0.001) + 0.005;
+
+                if (kind === 'primary') {
+                    // Chuông pha lê sang trọng ngân vang kép (Double Harmonic Crystal Chime)
+                    const osc1 = ctx.createOscillator();
+                    const gain1 = ctx.createGain();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(880, startTime); // A5
+                    osc1.frequency.exponentialRampToValueAtTime(1320, startTime + 0.12); // E6
+                    gain1.gain.setValueAtTime(0.4, startTime);
+                    gain1.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.3);
+                    osc1.connect(gain1);
+                    gain1.connect(ctx.destination);
+                    osc1.start(startTime);
+                    osc1.stop(startTime + 0.32);
+
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(1760, startTime); // A6
+                    osc2.frequency.exponentialRampToValueAtTime(2640, startTime + 0.08); // E7
+                    gain2.gain.setValueAtTime(0.22, startTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.24);
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+                    osc2.start(startTime);
+                    osc2.stop(startTime + 0.26);
+                } else if (kind === 'action') {
+                    // Âm thanh pop nước pha lê tròn trịa
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(680, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(420, startTime + 0.09);
+                    gain.gain.setValueAtTime(0.35, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.15);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.16);
+                } else {
+                    // Click giọt pha lê êm ái
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(820, startTime);
+                    osc.frequency.exponentialRampToValueAtTime(540, startTime + 0.06);
+                    gain.gain.setValueAtTime(0.28, startTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.1);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.11);
+                }
+            } catch (err) {}
+        }
+
+        function playUiClick(kind = 'click') {
+            if (!isSoundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') {
+                    ctx.resume().then(() => playSoundNodes(ctx, kind));
+                } else {
+                    playSoundNodes(ctx, kind);
+                }
+            } catch (e) {}
+        }
+
+        // ----------------------------------------------------
+        // 3. HIỆU ỨNG THỊ GIÁC BÙNG NỔ KHI ẤN (CLICK SHOCKWAVE & STARDUST BURST)
+        // ----------------------------------------------------
+        function triggerClickEffect(x, y, isBig = false) {
+            // 1. Sóng chấn động ánh sáng hồng
+            const ring = document.createElement('div');
+            ring.className = 'click-shockwave';
+            ring.style.pointerEvents = 'none';
+            ring.style.left = `${x}px`;
+            ring.style.top = `${y}px`;
+            document.body.appendChild(ring);
+            setTimeout(() => ring.remove(), 600);
+
+            // 2. Chùm hạt bụi sao lấp lánh tỏa tròn
+            const count = isBig ? 16 : 10;
+            const colors = ['#FFFFFF', '#FFEBF1', '#FF85AC', '#FFB8CF', '#F43F7A'];
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'click-particle';
+                p.style.pointerEvents = 'none';
+                const angle = (Math.PI * 2 / count) * i + (Math.random() - 0.5) * 0.4;
+                const distance = (Math.random() * 45 + 35) * (isBig ? 1.3 : 1);
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                const size = Math.random() * 4.5 + 2.5;
+                const col = colors[Math.floor(Math.random() * colors.length)];
+
+                p.style.width = `${size}px`;
+                p.style.height = `${size}px`;
+                p.style.backgroundColor = col;
+                p.style.boxShadow = `0 0 10px ${col}`;
+                p.style.left = `${x}px`;
+                p.style.top = `${y}px`;
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 580);
+            }
+        }
+
+        // Kích hoạt ngay lập tức trên sự kiện click toàn trang (Capture phase an toàn, không cản trở hành vi nút)
+        window.addEventListener('click', (e) => {
+            if (!e || typeof e.clientX !== 'number') return;
+            const clickable = e.target.closest('button, a, input, [onclick], .glass-card, .glass-btn-primary, .glass-btn-subtle');
+            const isPrimary = clickable && (clickable.classList.contains('glass-btn-primary') || clickable.tagName === 'BUTTON');
+            const kind = isPrimary ? 'primary' : (clickable ? 'action' : 'click');
+
+            playUiClick(kind);
+            triggerClickEffect(e.clientX, e.clientY, isPrimary);
+        }, true);
+
+        function toggleSoundMode() {
+            isSoundEnabled = !isSoundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (isSoundEnabled) {
+                icon.className = 'fa-solid fa-volume-high';
+                playUiClick('primary');
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+            }
+        }
+
+        // ----------------------------------------------------
+        // 4. CÔNG CỤ TÍNH ROI TRÊN THANH TRƯỢT
+        // ----------------------------------------------------
+        function updateRoiCalc(val) {
+            const num = parseInt(val);
+            document.getElementById('calcBudgetLabel').innerText = num.toLocaleString('vi-VN') + ' đ';
+            const saving = Math.round(num * 0.152);
+            document.getElementById('calcSavingResult').innerText = saving.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // ==========================================
+        // CỔNG ĐĂNG NHẬP DALPHA TRÊN LANDING PAGE
+        // ==========================================
+        var selectedLoginRole = 'customer';
+        window.selectedLoginRole = 'customer';
+
+        var GOOGLE_ACCOUNTS_PRESETS = {
+            customer: [
+                {
+                    name: "Nguyễn Tuấn (GĐ CNTT)",
+                    email: "tuan.it@namviet.vn",
+                    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&auto=format&fit=crop&q=80",
+                    company: "Công ty CP Đầu tư Nam Việt",
+                    handle: "@namviet_vip_client"
+                },
+                {
+                    name: "Phạm Minh Thu (TP Mua Sắm)",
+                    email: "procurement@techasia.vn",
+                    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+                    company: "Công ty Cổ phần TechAsia",
+                    handle: "@techasia_procurement"
+                },
+                {
+                    name: "Lê Hoàng (Tổng Giám Đốc)",
+                    email: "ceo@viettrans.com",
+                    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80",
+                    company: "Công ty VietTrans Logistics",
+                    handle: "@viettrans_corp"
+                }
+            ],
+            minhan: [
+                {
+                    name: "Sơn Tùng M-TP",
+                    email: "sontung.mtp@dalpha.vn",
+                    avatar: "https://commons.wikimedia.org/wiki/Special:FilePath/Son_Tung_M-TP_1_(2021).png?width=250",
+                    company: "DAlpha Technology",
+                    handle: "@sontung_mtp",
+                    title: "Trưởng Nhóm B2B Enterprise"
+                },
+                {
+                    name: "Hà Thị Quỳnh",
+                    email: "quynh.ha@dalpha.vn",
+                    avatar: "ha_thi_quynh.jpg",
+                    company: "DAlpha Technology",
+                    handle: "@emquynh-reviewgia",
+                    title: "Chuyên Viên Thẩm Định B2B"
+                },
+                {
+                    name: "Ninh Dương Lan Ngọc",
+                    email: "lanngoc@dalpha.vn",
+                    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+                    company: "DAlpha Technology",
+                    handle: "@lanngoc_lead",
+                    title: "Chuyên Viên Phân Tích Dữ Liệu"
+                }
+            ]
+        };
+
+        function openDalphaLoginPortal(preselectedRole = null) {
+            if (preselectedRole && (preselectedRole === 'customer' || preselectedRole === 'minhan')) {
+                selectLoginRole(preselectedRole);
+            }
+            const modal = document.getElementById('dalphaLoginModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeDalphaLoginPortal() {
+            const modal = document.getElementById('dalphaLoginModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function selectLoginRole(role) {
+            selectedLoginRole = role;
+            const cardCust = document.getElementById('roleCard_customer');
+            const cardMA = document.getElementById('roleCard_minhan');
+            const checkCust = document.getElementById('roleCheck_customer');
+            const checkMA = document.getElementById('roleCheck_minhan');
+
+            if (role === 'customer') {
+                if (cardCust) cardCust.className = "cursor-pointer p-4 rounded-2xl border-2 border-pink-500 bg-pink-500/15 space-y-2 transition-all shadow-sm";
+                if (cardMA) cardMA.className = "cursor-pointer p-4 rounded-2xl border-2 border-white/10 hover:border-pink-400/50 bg-white/5 space-y-2 transition-all";
+                if (checkCust) checkCust.classList.remove('hidden');
+                if (checkMA) checkMA.classList.add('hidden');
+            } else {
+                if (cardMA) cardMA.className = "cursor-pointer p-4 rounded-2xl border-2 border-pink-500 bg-pink-500/15 space-y-2 transition-all shadow-sm";
+                if (cardCust) cardCust.className = "cursor-pointer p-4 rounded-2xl border-2 border-white/10 hover:border-pink-400/50 bg-white/5 space-y-2 transition-all";
+                if (checkMA) checkMA.classList.remove('hidden');
+                if (checkCust) checkCust.classList.add('hidden');
+            }
+        }
+
+        function openGoogleAccountChooser() {
+            const modal = document.getElementById('googleAccountModal');
+            const listEl = document.getElementById('googleAccountList');
+            if (!modal || !listEl) return;
+
+            const accounts = GOOGLE_ACCOUNTS_PRESETS[selectedLoginRole] || GOOGLE_ACCOUNTS_PRESETS.customer;
+            listEl.innerHTML = accounts.map((acc, idx) => `
+                <div onclick="selectGoogleAccount(${idx})" class="p-3 rounded-2xl border border-white/15 hover:border-pink-500 hover:bg-pink-500/10 cursor-pointer flex items-center justify-between transition group">
+                    <div class="flex items-center space-x-3">
+                        <img src="${acc.avatar}" alt="${acc.name}" class="w-10 h-10 rounded-full object-cover ring-2 ring-pink-400/40 group-hover:ring-pink-500 transition">
+                        <div>
+                            <div class="font-extrabold text-xs text-white flex items-center space-x-1.5">
+                                <span>${acc.name}</span>
+                                ${acc.company ? `<span class="text-[9px] bg-white/10 text-pink-300 px-1.5 py-0.2 rounded font-bold">${acc.company}</span>` : ''}
+                            </div>
+                            <div class="text-[11px] text-pink-200/70 font-mono">${acc.email}</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-xs text-pink-300 group-hover:text-pink-400 group-hover:translate-x-1 transition"></i>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeGoogleAccountModal() {
+            const modal = document.getElementById('googleAccountModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function selectGoogleAccount(idx) {
+            const accounts = GOOGLE_ACCOUNTS_PRESETS[selectedLoginRole] || GOOGLE_ACCOUNTS_PRESETS.customer;
+            const acc = accounts[idx];
+            if (!acc) return;
+            handleGoogleLoginSuccess(acc, selectedLoginRole);
+        }
+
+        function toggleCustomGoogleInput() {
+            const box = document.getElementById('customGoogleInputBox');
+            if (box) box.classList.toggle('hidden');
+        }
+
+        function submitCustomGoogleAccount() {
+            const name = (document.getElementById('customGoogleName')?.value || 'Google User').trim();
+            const email = (document.getElementById('customGoogleEmail')?.value || 'user@gmail.com').trim();
+            if (!email.includes('@')) {
+                alert('Vui lòng nhập địa chỉ email hợp lệ!');
+                return;
+            }
+            const acc = {
+                name: name,
+                email: email,
+                avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80",
+                company: selectedLoginRole === 'customer' ? "Doanh Nghiệp Đối Tác" : "DAlpha Technology",
+                handle: "@" + email.split('@')[0]
+            };
+            handleGoogleLoginSuccess(acc, selectedLoginRole);
+        }
+
+        function handleGoogleLoginSuccess(account, role) {
+            const user = { ...account, role };
+            localStorage.setItem('dalpha_auth', JSON.stringify(user));
+            closeGoogleAccountModal();
+            closeDalphaLoginPortal();
+            // Điều hướng sang CRM chính sau khi đăng nhập thành công
+            window.location.href = `index.html?role=${role}`;
+        }
+
+        function bypassLandingLogin() {
+            const role = selectedLoginRole;
+            const defaultAcc = GOOGLE_ACCOUNTS_PRESETS[role][0];
+            localStorage.setItem('dalpha_auth', JSON.stringify({ ...defaultAcc, role }));
+            window.location.href = `index.html?role=${role}`;
+        }
+
+        // Kiểm tra URL nếu có yêu cầu đăng nhập (?login=1)
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('login') === '1') {
+            setTimeout(() => {
+                openDalphaLoginPortal(urlParams.get('role'));
+            }, 300);
+        }
+    </script>
+
+    <!-- ============================================================== -->
+    <!-- MODAL CỔNG ĐĂNG NHẬP DALPHA: KHÁCH HÀNG / DOANH NGHIỆP GOOGLE AUTH -->
+    <!-- ============================================================== -->
+    <div id="dalphaLoginModal" onclick="if(event.target === this) closeDalphaLoginPortal()" class="hidden fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-[#15181E] text-white rounded-3xl max-w-lg w-full p-8 shadow-2xl border border-pink-500/30 space-y-6 relative overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Nút đóng X góc trên -->
+            <button onclick="closeDalphaLoginPortal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 flex items-center justify-center transition z-20 cursor-pointer" title="Đóng">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Header quầng sáng nhẹ nhàng -->
+            <div class="absolute -top-16 -right-16 w-44 h-44 bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Logo & Tiêu đề -->
+            <div class="text-center space-y-2 relative z-10">
+                <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-600 to-pink-400 text-white items-center justify-center text-2xl shadow-lg mb-1">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <h3 class="text-xl font-black text-white tracking-tight">
+                    CỔNG ĐĂNG NHẬP DAlpha
+                </h3>
+                <p class="text-xs text-pink-200/70">
+                    Chọn vai trò để tiếp tục đăng nhập vào hệ thống
+                </p>
+            </div>
+
+            <!-- BƯỚC 1: CHỌN VAI TRÒ (2 OPTIONS) -->
+            <div class="space-y-2.5">
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Option 1: Khách hàng -->
+                    <div id="roleCard_customer" onclick="selectLoginRole('customer')" class="cursor-pointer p-4 rounded-2xl border-2 border-pink-500 bg-pink-500/15 space-y-2 transition-all shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-xl bg-pink-500/25 text-pink-300 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-user-tie"></i>
+                            </div>
+                            <span id="roleCheck_customer" class="w-5 h-5 rounded-full bg-pink-600 text-white text-[10px] flex items-center justify-center font-bold">✓</span>
+                        </div>
+                        <div>
+                            <div class="font-extrabold text-xs text-white">Khách Hàng B2B</div>
+                            <div class="text-[10px] text-pink-200/70 mt-0.5">Tải hồ sơ & Báo cáo A4</div>
+                        </div>
+                    </div>
+
+                    <!-- Option 2: Doanh nghiệp DAlpha -->
+                    <div id="roleCard_minhan" onclick="selectLoginRole('minhan')" class="cursor-pointer p-4 rounded-2xl border-2 border-white/10 hover:border-pink-400/50 bg-white/5 space-y-2 transition-all">
+                        <div class="flex items-center justify-between">
+                            <div class="w-8 h-8 rounded-xl bg-white/10 text-slate-200 flex items-center justify-center text-sm font-bold">
+                                <i class="fa-solid fa-building-shield"></i>
+                            </div>
+                            <span id="roleCheck_minhan" class="hidden w-5 h-5 rounded-full bg-pink-600 text-white text-[10px] flex items-center justify-center font-bold">✓</span>
+                        </div>
+                        <div>
+                            <div class="font-extrabold text-xs text-white">Doanh Nghiệp DAlpha</div>
+                            <div class="text-[10px] text-pink-200/70 mt-0.5">Quản trị CRM & Tồn kho ATP</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BƯỚC 2: TIẾP TỤC VỚI GOOGLE -->
+            <div class="space-y-3 pt-1 border-t border-white/10">
+                <!-- Nút Đăng Nhập Google Chính Thức -->
+                <button onclick="openGoogleAccountChooser()" class="w-full py-3.5 px-4 rounded-2xl border-2 border-white/15 hover:border-pink-500 bg-white/10 hover:bg-white/15 text-white font-extrabold text-xs shadow-sm transition flex items-center justify-center space-x-3 group cursor-pointer">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Đăng nhập bằng tài khoản Google</span>
+                </button>
+
+                <!-- Nút Trải Nghiệm Trực Tiếp (Không chặn người dùng) -->
+                <button onclick="bypassLandingLogin()" class="w-full py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-pink-200 text-xs font-bold transition flex items-center justify-center space-x-1.5 cursor-pointer">
+                    <span>Trải nghiệm trực tiếp (Không cần đăng nhập) &rarr;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP CHỌN TÀI KHOẢN GOOGLE (GOOGLE ACCOUNT CHOOSER MODAL) -->
+    <div id="googleAccountModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-[#181B22] text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-pink-500/30 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span class="font-extrabold text-sm">Đăng nhập bằng Google</span>
+                </div>
+                <button onclick="closeGoogleAccountModal()" class="text-slate-400 hover:text-white cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="text-xs text-pink-200/80">
+                Chọn một tài khoản để tiếp tục đăng nhập vào <b class="text-pink-400">DAlpha CRM</b>:
+            </div>
+
+            <!-- Danh sách tài khoản Google gợi ý nạp động theo vai trò -->
+            <div class="space-y-1.5" id="googleAccountList"></div>
+
+            <!-- Tùy chọn nhập tài khoản Google khác -->
+            <div class="pt-3 border-t border-white/10">
+                <button onclick="toggleCustomGoogleInput()" class="w-full py-2 px-3 rounded-xl hover:bg-white/5 text-xs font-bold text-pink-200 flex items-center space-x-2.5 transition cursor-pointer">
+                    <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-pink-300">
+                        <i class="fa-solid fa-user-plus text-xs"></i>
+                    </div>
+                    <span>Sử dụng một tài khoản Google khác</span>
+                </button>
+                <div id="customGoogleInputBox" class="hidden mt-2 p-3 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+                    <input type="text" id="customGoogleName" placeholder="Họ và tên của bạn" class="w-full p-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs outline-none">
+                    <input type="email" id="customGoogleEmail" placeholder="Địa chỉ email Google (@gmail.com / domain)" class="w-full p-2 rounded-xl bg-white/10 border border-white/20 text-white text-xs outline-none">
+                    <button onclick="submitCustomGoogleAccount()" class="w-full py-2 bg-pink-600 hover:bg-pink-700 text-white font-extrabold text-xs rounded-xl shadow transition cursor-pointer">
+                        Xác Nhận &amp; Vào CRM
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </script>
+</body>
+</html>

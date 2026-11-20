@@ -1,0 +1,220 @@
+"""
+Vercel Serverless Entrypoint (api/index.py) cho DAlpha B2B AI Agent CRM
+Hỗ trợ cả Static Routing và FastAPI Preset trên Vercel.
+"""
+
+import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
+from typing import List, Optional
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+from pydantic import BaseModel
+
+app = FastAPI(title="DAlpha AI Agent CRM API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# MASTER DATA
+CATALOG = {
+    "LAP-DELL-5520": {"name": "Laptop Dell Latitude 5520 i7/16GB/512GB", "price": 22_500_000},
+    "SRV-DELL-R740": {"name": "Server Dell PowerEdge R740 2x Xeon", "price": 85_000_000},
+    "SW-CISCO-C9200": {"name": "Switch Cisco Catalyst C9200L 24 Ports", "price": 28_000_000},
+    "SVC-SETUP-NW": {"name": "Dịch vụ Triển khai Mạng", "price": 15_000_000},
+    "SVC-MAINT-1Y": {"name": "Dịch vụ Bảo trì CNTT 1 năm", "price": 36_000_000}
+}
+
+INVENTORY = {
+    "LAP-DELL-5520": {"stock": 25, "lead_time_out": 7},
+    "SRV-DELL-R740": {"stock": 1, "lead_time_out": 21},
+    "SW-CISCO-C9200": {"stock": 10, "lead_time_out": 14},
+    "SVC-SETUP-NW": {"stock": 999, "lead_time_out": 2},
+    "SVC-MAINT-1Y": {"stock": 999, "lead_time_out": 1}
+}
+
+
+class RequestItem(BaseModel):
+    product_code: str
+    quantity: int
+
+
+class CustomerRequest(BaseModel):
+    customer_name: str
+    customer_email: str
+    items: List[RequestItem]
+    requested_discount_rate: float = 0.0
+    desired_deadline_days: int = 7
+
+
+def _find_file(filename: str) -> Optional[Path]:
+    for candidate in [
+        BASE_DIR / filename,
+        Path(filename),
+        Path(__file__).resolve().parent / filename,
+        BASE_DIR / "static" / filename
+    ]:
+        if candidate.exists() and candidate.is_file():
+            return candidate
+    return None
+
+
+def _read_html_file(filename: str) -> HTMLResponse:
+    p = _find_file(filename)
+    if p:
+        return HTMLResponse(content=p.read_text(encoding="utf-8"), status_code=200)
+    return HTMLResponse(content=f"<h1>Không tìm thấy file {filename}</h1>", status_code=404)
+
+
+@app.get("/", response_class=HTMLResponse)
+def serve_home():
+    return _read_html_file("landing.html")
+
+
+@app.get("/landing.html", response_class=HTMLResponse)
+def serve_landing():
+    return _read_html_file("landing.html")
+
+
+@app.get("/index.html", response_class=HTMLResponse)
+def serve_index():
+    return _read_html_file("index.html")
+
+
+@app.get("/b2b_process.html", response_class=HTMLResponse)
+def serve_b2b_process():
+    return _read_html_file("b2b_process.html")
+
+
+@app.get("/quote_template.html", response_class=HTMLResponse)
+def serve_quote_template():
+    return _read_html_file("quote_template.html")
+
+
+@app.get("/{file_name}.html", response_class=HTMLResponse)
+def serve_any_html(file_name: str):
+    return _read_html_file(f"{file_name}.html")
+
+
+@app.get("/ha_thi_quynh.jpg")
+def serve_avatar():
+    p = _find_file("ha_thi_quynh.jpg")
+    if p:
+        return FileResponse(p, media_type="image/jpeg")
+    return HTMLResponse("Not Found", status_code=404)
+
+
+@app.get("/api/health")
+def health_check():
+    return JSONResponse({"status": "ok", "service": "DAlpha B2B AI Agent CRM"})
+
+
+@app.post("/api/v1/process-opportunity")
+def process_opportunity(req: CustomerRequest):
+    total_list_price = 0
+    max_lead_time = 0
+    processed_items = []
+
+    for it in req.items:
+        cat = CATALOG.get(it.product_code)
+        if not cat:
+            continue
+        inv = INVENTORY.get(it.product_code, {"stock": 0, "lead_time_out": 30})
+        in_stock = inv["stock"] >= it.quantity
+        lead = 2 if in_stock else inv["lead_time_out"]
+        if lead > max_lead_time:
+            max_lead_time = lead
+
+        subtotal = cat["price"] * it.quantity
+        total_list_price += subtotal
+
+        processed_items.append({
+            "code": it.product_code,
+            "name": cat["name"],
+            "quantity": it.quantity,
+            "unit_price": cat["price"],
+            "subtotal": subtotal,
+            "in_stock": in_stock,
+            "lead_time_days": lead
+        })
+
+    discount_amount = total_list_price * req.requested_discount_rate
+    final_amount = total_list_price - discount_amount
+    requires_approval = req.requested_discount_rate > 0.10
+    timeline_warning = req.desired_deadline_days < max_lead_time
+
+    return {
+        "customer": req.customer_name,
+        "email": req.customer_email,
+        "items": processed_items,
+        "total_list_price": total_list_price,
+        "discount_amount": discount_amount,
+        "final_amount": final_amount,
+        "feasible_lead_time_days": max_lead_time,
+        "timeline_warning": timeline_warning,
+        "requires_manager_approval": requires_approval,
+        "approval_status": "Chờ Trưởng phòng duyệt" if requires_approval else "Đã duyệt tự động"
+    }
+
+
+class SendEmailPayload(BaseModel):
+    to_email: str
+    customer_name: str = "Quý khách hàng"
+    subject: str = "Báo Cáo Phân Tích Dữ Liệu AI & Đề Xuất Ngân Sách - DAlpha Technology"
+    text_body: str = ""
+    html_body: str = ""
+    smtp_user: Optional[str] = None
+    smtp_pass: Optional[str] = None
+
+
+@app.post("/api/send-email")
+def send_real_email(payload: SendEmailPayload):
+    smtp_user = (payload.smtp_user or os.environ.get("SMTP_USER") or "").strip()
+    smtp_pass = (payload.smtp_pass or os.environ.get("SMTP_PASS") or "").strip().replace(" ", "")
+
+    if not smtp_user or not smtp_pass:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "success": False,
+                "mode": "no_smtp_credentials",
+                "message": "Chưa cấu hình tài khoản SMTP Gmail trên máy chủ. Đã chuyển sang chế độ gửi qua FormSubmit API / Gmail Web."
+            }
+        )
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["From"] = f"DAlpha Technology AI <{smtp_user}>"
+        msg["To"] = payload.to_email
+        msg["Subject"] = payload.subject
+
+        if payload.text_body:
+            msg.attach(MIMEText(payload.text_body, "plain", "utf-8"))
+        if payload.html_body:
+            msg.attach(MIMEText(payload.html_body, "html", "utf-8"))
+
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, [payload.to_email], msg.as_string())
+
+        return {
+            "success": True,
+            "mode": "smtp",
+            "message": f"Đã gửi email thật thành công từ {smtp_user} tới {payload.to_email}!"
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=200,
+            content={"success": False, "mode": "smtp_error", "message": str(e)}
+        )
